@@ -5,6 +5,7 @@ import { bindKeyboard } from './input/keyboard';
 import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
 import { UIScene } from './scenes/UIScene';
+import { showDiagnostics } from './diag';
 
 const intent = new Intent();
 bindKeyboard(intent);
@@ -25,3 +26,4 @@ const game = new Phaser.Game({
 });
 
 if (import.meta.env.DEV) Object.assign(window, { game }); // poke at it from the console while developing
+showDiagnostics(game); // TEMPORARY, iPhone PWA crop investigation
