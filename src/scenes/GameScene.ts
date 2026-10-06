@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { BLINK_TIME, CAMERA_LEAD, DEBRIS, FADE_TIME, FALL_MARGIN, GAME_W, PARALLAX, TILE } from '../config';
 import { Bolt } from '../entities/Bolt';
+import { zombieContact } from '../entities/contact';
 import { Hero } from '../entities/Hero';
 import { Zombie } from '../entities/Zombie';
 import type { Intent } from '../input/Intent';
@@ -177,14 +178,18 @@ export class GameScene extends Phaser.Scene {
     crate.destroy();
   }
 
-  /** Feet above the zombie's middle while falling = stomp; any other touch sends the hero back. */
+  /** Stomp kills the zombie, a touch on the same floor sends the hero back, an overlap across floors is ignored. */
   private touchZombie(z: Zombie) {
     if (this.hero.mode === 'frozen' || z.mode === 'dying') return;
     const hb = this.hero.body;
-    if (hb.velocity.y > 0 && hb.bottom < z.body.center.y) {
+    const contact = zombieContact(
+      { top: hb.top, bottom: hb.bottom, vy: hb.velocity.y },
+      { top: z.body.top, bottom: z.body.bottom, centerY: z.body.center.y },
+    );
+    if (contact === 'stomp') {
       this.killZombie(z);
       this.hero.bounce();
-    } else {
+    } else if (contact === 'hurt') {
       this.killHero();
     }
   }
