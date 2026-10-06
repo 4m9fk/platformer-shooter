@@ -1,0 +1,16 @@
+Use the attached image as the strict character reference. Draw EXACTLY the same character: same boy, same face, same proportions, same outfit, same colors, same art style. Do not redesign, restyle or add anything.
+
+Character lock: chibi 2D cartoon game sprite, oversized head (about 1/2 of body height), short tousled light brown hair, big round blue-gray eyes with large dark pupils, small rounded nose, ears sticking out, cheerful smile showing two front teeth, red t-shirt with white collar and white sleeve trims, short red cape behind the back, dark brown shorts, white socks, white sneakers with black soles, gray sci-fi blaster pistol with blue glowing barrel held in the right hand.
+
+Style lock: thick uniform dark brown outlines, flat cel shading with exactly one shadow tone, clean vector game art, no gradients, no textures, no motion blur.
+
+Sprite sheet format: one horizontal row of equally sized frames, the character is the same size and at the same scale in every frame, feet aligned on the same baseline (except airborne frames), side view facing RIGHT, full body visible in every frame, nothing cropped, even spacing, plain flat pure white background (#FFFFFF), no ground shadow, no text, no numbers, no frame borders, no extra characters.
+
+Animation: JUMP, 6 frames, plays once.
+Frame 1: anticipation – deep crouch, knees bent, arms pulled back.
+Frame 2: take-off – legs extending, body stretched upward, toes leaving ground.
+Frame 3: rising – airborne, knees tucked up, cape and hair flowing downward.
+Frame 4: apex – highest point, compact tucked pose, cape floating.
+Frame 5: falling – legs extending down toward ground, cape and hair flowing upward.
+Frame 6: landing – feet on ground, knees bent to absorb impact, slight squash.
+Blaster stays in the right hand in every frame. Airborne frames show the character higher in the cell; ground frames keep feet on the baseline.

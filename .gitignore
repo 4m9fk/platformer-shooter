@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dev-dist/
+.idea/
+.DS_Store
+tools/__pycache__/
+
+# сырые результаты генерации, не нужны игре
+/*.png
+/walk_fix/
+/generated/anim/

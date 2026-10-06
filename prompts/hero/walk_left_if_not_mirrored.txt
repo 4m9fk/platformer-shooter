@@ -1,0 +1,35 @@
+Use the attached image as the strict character reference. Draw EXACTLY the same character: same boy, same face, same proportions, same outfit, same colors, same art style. Do not redesign, restyle or add anything.
+
+Character lock: chibi 2D cartoon game sprite, oversized head (about 1/2 of body height), short tousled light brown hair, big round blue-gray eyes with large dark pupils, small rounded nose, ears sticking out, cheerful smile showing two front teeth, red t-shirt with white collar and white sleeve trims, short red cape behind the back, dark brown shorts, white socks, white sneakers with black soles, gray sci-fi blaster pistol with blue glowing barrel held in the right hand.
+
+Style lock: thick uniform dark brown outlines, flat cel shading with exactly one shadow tone, clean vector game art, no gradients, no textures, no motion blur.
+
+Sprite sheet format: one horizontal row of equally sized frames, the character is the same size and at the same scale in every frame, feet aligned on the same baseline (except airborne frames), side view facing LEFT, full body visible in every frame, nothing cropped, even spacing, plain flat pure white background (#FFFFFF), no ground shadow, no text, no numbers, no frame borders, no extra characters.
+
+Mirror the character horizontally, keep every other detail identical.
+
+Animation: WALK CYCLE, exactly 8 frames arranged in a grid of 2 rows x 4 columns, read left to right, top row first. Seamless loop: after frame 8 comes frame 1 again. Classic calm 2D platformer walk.
+
+NEAR leg = the leg closer to the viewer, drawn on top, normal colors. FAR leg = the leg behind it, partly hidden, drawn one shade darker (darker skin, sock and shoe). This shading must stay consistent in all 8 frames so the two legs are always distinguishable.
+
+TOP ROW – step with the NEAR leg:
+Frame 1 CONTACT: near leg reaches forward, straight, heel touching the ground; far leg stretched back, only its toe touching the ground. Widest stride.
+Frame 2 DOWN: near foot flat on the ground in front of the hips, near knee slightly bent, taking the weight; far foot leaves the ground behind, far knee bending. Body at its lowest.
+Frame 3 PASSING: near leg straight and vertical under the hips; far leg bent at the knee, its foot lifted just above the ground and passing BEHIND the near leg, at the same x position as the near ankle.
+Frame 4 UP: near leg pushes off, slightly behind the hips, heel lifting; far leg swings forward ahead of the body, knee bent, foot in the air about to reach forward. Body at its highest.
+
+BOTTOM ROW – exactly the same 4 phases, but the legs swap roles:
+Frame 5 CONTACT: FAR leg reaches forward with heel touching; NEAR leg stretched back on its toe. Widest stride.
+Frame 6 DOWN: far foot flat on the ground in front of the hips taking the weight; near foot leaves the ground behind.
+Frame 7 PASSING: far leg straight and vertical under the hips; near leg bent, foot lifted just above the ground, passing IN FRONT of the far leg (drawn on top of it).
+Frame 8 UP: far leg pushes off behind the hips; near leg swings forward ahead of the body, knee bent, foot in the air.
+
+Check: frames 1 and 5 look almost the same except which leg is in front; same for 2/6, 3/7, 4/8. In every frame at least one foot touches the ground. Feet always point right. Stride length is the same in frames 1 and 5.
+
+UPPER BODY – identical in all 8 frames:
+same head size, same head angle, same face and expression, same torso, same gun arm pose: right arm held forward at chest level holding the blaster, perfectly steady.
+The free left arm swings a little, opposite to the near leg: back in frame 1, forward in frame 5. The cape tail sways slightly. Vertical bob is small, at most 3% of the character height: lowest in DOWN frames (2, 6), highest in UP frames (4, 8).
+
+LAYOUT: all 8 cells are the same size, the character is exactly the same size in every frame, feet on the same ground line within each row, both rows aligned identically, equal gaps between cells, no frame overlaps another.
+
+FORBIDDEN: crouching, squatting, jumping, running, both feet side by side, crossed legs, knees bent deeper than in a normal calm walk, leaning forward, changing the character's size, turning the head, extra legs, missing feet, drawing the bottom row as a copy of the top row.

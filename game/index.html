@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game 1 — demo</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #1d2333; }
+    body { display: grid; place-items: center; overflow: hidden; }
+    canvas { width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; display: block; }
+  </style>
+</head>
+<body>
+  <canvas id="game" width="960" height="540"></canvas>
+  <script src="../generated/sprites/sprites.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

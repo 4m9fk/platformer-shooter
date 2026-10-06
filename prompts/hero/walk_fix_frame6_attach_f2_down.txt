@@ -1,0 +1,8 @@
+Edit this sprite. Keep EVERYTHING identical – head, face, torso, arms, blaster, cape, size, position, white background – and redraw ONLY the two legs.
+
+Now: the WHITE-sock leg stands flat in front, the GRAY-sock leg is lifted behind.
+Make it the other way round:
+- GRAY-sock leg: foot flat on the ground in front of the hips, knee slightly bent, carrying the weight. Its shoe is the RIGHTMOST shoe, standing on the ground.
+- WHITE-sock leg: behind the body, knee bent, its foot lifted off the ground with the toe pointing down. Its shoe is the LEFTMOST shoe, in the air.
+- The white-sock leg is closer to the viewer, so it is drawn ON TOP of the gray-sock leg where they overlap.
+The result must look like the same pose, only the legs swapped places.

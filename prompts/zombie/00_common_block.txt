@@ -1,0 +1,7 @@
+Use the FIRST attached image as the strict character reference: draw EXACTLY the same zombie, same face, same proportions, same outfit, same colors. Use the SECOND attached image (the boy) ONLY as a style and scale reference: the zombie must be the same height as the boy and drawn in the same art style. Do not draw the boy.
+
+Character lock: goofy friendly chibi cartoon zombie, oversized head, pale mint-green skin, short messy dark teal hair, one big round yellow eye and one droopy half-closed eye, big dopey open-mouth grin with two crooked teeth, cross-shaped stitches on one cheek, torn dark purple t-shirt, gray-blue ragged shorts with a patch, one green sock and one gray sock, brown worn shoes. Both arms stretched forward with limp hands.
+
+Style lock: thick uniform dark brown outlines, flat cel shading with exactly one shadow tone, clean vector game art, no gradients, no textures, no motion blur, no blood, no gore, kid-friendly.
+
+Sprite sheet format: one horizontal row of equally sized frames, the character is the same size and at the same scale in every frame, feet aligned on the same baseline, side view facing RIGHT, full body visible in every frame, nothing cropped, even spacing, plain flat pure white background (#FFFFFF), no ground shadow, no text, no numbers, no frame borders, no extra characters.

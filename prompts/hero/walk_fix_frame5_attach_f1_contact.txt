@@ -1,0 +1,9 @@
+Edit this sprite. Keep EVERYTHING identical – head, face, torso, arms, blaster, cape, size, position, white background – and redraw ONLY the two legs.
+
+Now: the leg with the WHITE sock is in front (its shoe is the rightmost), the leg with the GRAY sock is behind.
+Make it the other way round:
+- GRAY-sock leg: reaches forward, straight, heel on the ground. Its shoe is now the RIGHTMOST shoe in the picture, in exactly the spot where the white shoe is now.
+- WHITE-sock leg: stretched backward, only its toe touching the ground. Its shoe is now the LEFTMOST shoe, in exactly the spot where the gray shoe is now.
+- The white-sock leg is still closer to the viewer, so at the hips it is drawn ON TOP of the gray-sock leg and hides the top of its thigh.
+Keep the sock colors: the forward foot has a gray sock and a slightly darker shoe, the back foot has a white sock.
+The result must look like the same stride, only the legs swapped places.

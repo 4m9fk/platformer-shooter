@@ -1,0 +1,23 @@
+Use the attached image as the strict character reference. Draw EXACTLY the same character: same boy, same face, same proportions, same outfit, same colors, same art style. Do not redesign, restyle or add anything.
+
+Character lock: chibi 2D cartoon game sprite, oversized head (about 1/2 of body height), short tousled light brown hair, big round blue-gray eyes with large dark pupils, small rounded nose, ears sticking out, cheerful smile showing two front teeth, red t-shirt with white collar and white sleeve trims, short red cape behind the back, dark brown shorts, white socks, white sneakers with black soles, gray sci-fi blaster pistol with blue glowing barrel held in the right hand.
+
+Style lock: thick uniform dark brown outlines, flat cel shading with exactly one shadow tone, clean vector game art, no gradients, no textures, no motion blur.
+
+Sprite sheet format: one horizontal row of equally sized frames, the character is the same size and at the same scale in every frame, feet aligned on the same baseline (except airborne frames), side view facing RIGHT, full body visible in every frame, nothing cropped, even spacing, plain flat pure white background (#FFFFFF), no ground shadow, no text, no numbers, no frame borders, no extra characters.
+
+Animation: IDLE, exactly 4 frames in one row, seamless loop, calm breathing while standing still.
+
+POSE – identical in all 4 frames:
+standing relaxed, feet flat on the ground about shoulder width apart, knees straight, weight evenly on both feet, body facing right, head looking right, same friendly smile. Right arm holds the blaster relaxed in front of the body at waist level, barrel pointing forward and slightly down. Left arm hangs loosely at the side.
+
+BREATHING – the only change between frames:
+Frame 1 NEUTRAL: base pose.
+Frame 2 INHALE: chest and shoulders rise slightly, head moves up by about 1% of the character height, cape lifts a tiny bit.
+Frame 3 HOLD: same as frame 2, cape tail drifts slightly back.
+Frame 4 EXHALE: shoulders and head settle back down to the base pose, cape relaxes.
+The blaster arm moves together with the shoulders, the blaster's blue barrel glow stays the same.
+
+LAYOUT: the character is exactly the same size in every frame, feet do not move at all and stay on one straight ground line, frames evenly spaced with equal gaps.
+
+FORBIDDEN: walking, stepping, shifting feet, bending knees, crouching, leaning, turning the head, blinking with closed eyes in more than one frame, changing the expression, raising or aiming the blaster, changing the character's size.

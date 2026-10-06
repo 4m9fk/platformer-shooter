@@ -1,0 +1,14 @@
+Use the attached image as the strict character reference. Draw EXACTLY the same character: same boy, same face, same proportions, same outfit, same colors, same art style. Do not redesign, restyle or add anything.
+
+Character lock: chibi 2D cartoon game sprite, oversized head (about 1/2 of body height), short tousled light brown hair, big round blue-gray eyes with large dark pupils, small rounded nose, ears sticking out, cheerful smile showing two front teeth, red t-shirt with white collar and white sleeve trims, short red cape behind the back, dark brown shorts, white socks, white sneakers with black soles, gray sci-fi blaster pistol with blue glowing barrel held in the right hand.
+
+Style lock: thick uniform dark brown outlines, flat cel shading with exactly one shadow tone, clean vector game art, no gradients, no textures, no motion blur.
+
+Sprite sheet format: one horizontal row of equally sized frames, the character is the same size and at the same scale in every frame, feet aligned on the same baseline (except airborne frames), side view facing RIGHT, full body visible in every frame, nothing cropped, even spacing, plain flat pure white background (#FFFFFF), no ground shadow, no text, no numbers, no frame borders, no extra characters.
+
+Animation: SHOOT, 4 frames.
+Frame 1: aim – standing firm, right arm fully extended forward holding the blaster level, left hand in a fist at the side, focused determined expression.
+Frame 2: fire – same pose, bright blue-white muzzle flash at the blaster tip, small blue energy bolt leaving the barrel.
+Frame 3: recoil – blaster arm kicked slightly up and back, body leaning back a little, small fading flash.
+Frame 4: recover – back to the aim pose, no flash.
+Legs stay planted in the same position in all frames, only the arm, shoulders and head react to recoil.
