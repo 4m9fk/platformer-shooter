@@ -4,11 +4,12 @@ import { Intent } from './input/Intent';
 import { bindKeyboard } from './input/keyboard';
 import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
+import { UIScene } from './scenes/UIScene';
 
 const intent = new Intent();
 bindKeyboard(intent);
 
-new Phaser.Game({
+const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
   backgroundColor: SKY_TOP,
@@ -19,5 +20,7 @@ new Phaser.Game({
   },
   input: { activePointers: 4 }, // run, jump and shoot with separate fingers
   callbacks: { preBoot: (game) => game.registry.set('intent', intent) },
-  scene: [BootScene, GameScene],
+  scene: [BootScene, GameScene, UIScene],
 });
+
+if (import.meta.env.DEV) Object.assign(window, { game }); // poke at it from the console while developing

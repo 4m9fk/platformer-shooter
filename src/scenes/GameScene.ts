@@ -76,6 +76,11 @@ export class GameScene extends Phaser.Scene {
       this.boltHit(b as Bolt);
       this.killZombie(z as Zombie);
     });
+    this.physics.add.overlap(this.hero, this.flag, () => {
+      if (this.registry.get('won') || this.respawning) return;
+      this.hero.freeze();
+      this.registry.set('won', true);
+    });
 
     const cam = this.cameras.main;
     cam.setBounds(0, 0, worldW, worldH);
@@ -100,11 +105,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   private addBackground() {
+    const horizon = GAME_H - 2 * TILE; // hills stand on the top of the two-tile ground
     this.add.image(0, 0, 'sky').setOrigin(0).setScrollFactor(0).setDisplaySize(GAME_W, GAME_H);
     this.layers = [
       this.add.tileSprite(0, 0, GAME_W, 260, 'clouds'),
-      this.add.tileSprite(0, GAME_H - 260, GAME_W, 260, 'hills-far'),
-      this.add.tileSprite(0, GAME_H - 200, GAME_W, 200, 'hills-near'),
+      this.add.tileSprite(0, horizon - 260 + 40, GAME_W, 260, 'hills-far'),
+      this.add.tileSprite(0, horizon - 200 + 60, GAME_W, 200, 'hills-near'),
     ].map((layer) => layer.setOrigin(0).setScrollFactor(0));
   }
 

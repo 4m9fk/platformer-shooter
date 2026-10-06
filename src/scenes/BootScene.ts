@@ -23,5 +23,6 @@ export class BootScene extends Phaser.Scene {
     createAnims(this, 'hero');
     createAnims(this, 'zombie');
     this.scene.start('Game');
+    this.scene.launch('UI');
   }
 }
