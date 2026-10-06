@@ -27,7 +27,8 @@ SHEETS = {
     "zombie_hit.png": (["hit"], ("hit", 0)),  # surprise pose: standing straight, hands at forehead level
 }
 FPS = {"idle": 4, "walk": 8, "attack": 10, "jump": 10, "hit": 8}
-MIN_BLOB = 2000     # smaller blobs are specks
+MIN_BLOB = 2000     # blobs this big define frames; smaller ones (stars, puffs) attach to the frame around them
+SPECK = 150         # blobs smaller than this are dropped
 ROW_GAP = 25        # vertical gap (px) that separates rows of groups
 GROUP_GAP = 60      # horizontal gap (px) that separates groups within a row
 FRAME_OVERLAP = 0.4  # blobs overlapping horizontally by more than this fraction belong to one frame
@@ -45,13 +46,16 @@ def hero_metrics():
 
 
 def blobs(rgba):
+    """Labels, big blobs (frame bodies) and small blobs (details near a body)."""
     labels, n = ndimage.label(rgba[..., 3] > 0)
-    out = []
+    big, small = [], []
     for i, sl in enumerate(ndimage.find_objects(labels), start=1):
-        if (labels[sl] == i).sum() < MIN_BLOB:
+        size = (labels[sl] == i).sum()
+        if size < SPECK:
             continue
-        out.append({"id": i, "x0": sl[1].start, "x1": sl[1].stop, "y0": sl[0].start, "y1": sl[0].stop})
-    return labels, out
+        b = {"id": i, "x0": sl[1].start, "x1": sl[1].stop, "y0": sl[0].start, "y1": sl[0].stop}
+        (big if size >= MIN_BLOB else small).append(b)
+    return labels, big, small
 
 
 def cluster(items, key0, key1, gap):
@@ -66,8 +70,9 @@ def cluster(items, key0, key1, gap):
     return runs
 
 
-def frames_from_group(labels, rgba, group):
-    """Merge blobs that overlap horizontally into frames, sorted left to right."""
+def frames_from_group(labels, rgba, group, small=()):
+    """Merge blobs that overlap horizontally into frames, sorted left to right; then attach small blobs
+    (stars, puffs) to the frame whose span contains their center."""
     group = sorted(group, key=lambda b: b["x0"])
     frames = []
     for b in group:
@@ -80,6 +85,12 @@ def frames_from_group(labels, rgba, group):
                 last["x0"], last["x1"] = min(last["x0"], b["x0"]), max(last["x1"], b["x1"])
                 continue
         frames.append({"ids": [b["id"]], "x0": b["x0"], "x1": b["x1"]})
+    for b in small:
+        cx = (b["x0"] + b["x1"]) / 2
+        for f in frames:
+            if f["x0"] <= cx <= f["x1"]:
+                f["ids"].append(b["id"])
+                break
     out = []
     for f in frames:
         mask = np.isin(labels, f["ids"])
@@ -160,7 +171,7 @@ if __name__ == "__main__":
     anims, scales = {}, {}
     for sheet, (names, ref) in SHEETS.items():
         rgba = remove_background(np.asarray(Image.open(ROOT / sheet).convert("RGB")))
-        labels, bl = blobs(rgba)
+        labels, bl, small = blobs(rgba)
         if len(names) == 1:
             groups = [bl]
         else:
@@ -168,7 +179,8 @@ if __name__ == "__main__":
             groups = [g for row in rows for g in cluster(row, "x0", "x1", GROUP_GAP)]
         if len(groups) != len(names):
             sys.exit(f"{sheet}: expected {len(names)} groups, found {len(groups)}: {[len(g) for g in groups]}")
-        found = {name: frames_from_group(labels, rgba, g) for name, g in zip(names, groups)}
+        row_small = lambda g: [b for b in small if min(x["y0"] for x in g) - 120 <= b["y0"] <= max(x["y1"] for x in g)]
+        found = {name: frames_from_group(labels, rgba, g, row_small(g)) for name, g in zip(names, groups)}
         standing = main_body_height(found[ref[0]][ref[1]])
         scale = hero_height / standing
         print(f"{sheet}: standing height {standing}px, hero {hero_height:.0f}px -> scale x{scale:.2f}")
