@@ -1,52 +1,124 @@
 {
-  "cell": {
-    "w": 562,
-    "h": 512
-  },
-  "anchor": {
-    "x": 208,
-    "y": 489
-  },
   "animations": {
     "zombie_idle_right": {
       "frames": 4,
-      "fps": 4
+      "fps": 4,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 208,
+        "y": 489
+      }
     },
     "zombie_idle_left": {
       "frames": 4,
-      "fps": 4
+      "fps": 4,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 354,
+        "y": 489
+      }
     },
     "zombie_walk_right": {
       "frames": 9,
-      "fps": 8
+      "fps": 8,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 208,
+        "y": 489
+      }
     },
     "zombie_walk_left": {
       "frames": 9,
-      "fps": 8
+      "fps": 8,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 354,
+        "y": 489
+      }
     },
     "zombie_attack_right": {
       "frames": 4,
-      "fps": 10
+      "fps": 10,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 208,
+        "y": 489
+      }
     },
     "zombie_attack_left": {
       "frames": 4,
-      "fps": 10
+      "fps": 10,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 354,
+        "y": 489
+      }
     },
     "zombie_jump_right": {
       "frames": 6,
-      "fps": 10
+      "fps": 10,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 208,
+        "y": 490
+      }
     },
     "zombie_jump_left": {
       "frames": 6,
-      "fps": 10
+      "fps": 10,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 354,
+        "y": 490
+      }
     },
     "zombie_hit_right": {
       "frames": 4,
-      "fps": 8
+      "fps": 8,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 208,
+        "y": 489
+      }
     },
     "zombie_hit_left": {
       "frames": 4,
-      "fps": 8
+      "fps": 8,
+      "cell": {
+        "w": 562,
+        "h": 512
+      },
+      "anchor": {
+        "x": 354,
+        "y": 489
+      }
     }
   }
 }

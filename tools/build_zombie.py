@@ -3,7 +3,8 @@
 Usage: python build_zombie.py
 Sheets are listed in SHEETS (project root). On a sheet with several animations the groups are found by gaps
 between blobs, read left to right, top row first; a sheet with one animation is one group. The zombie is scaled so its standing height equals the hero's standing height
-and placed into the hero's cell (same size, same feet baseline, head on the same vertical axis).
+and placed into the hero's cell (same feet baseline, head on the same vertical axis). An animation that does not
+fit (arms above the head, stars) gets a bigger cell, grown upward and sideways, with its own anchor in zombie.json.
 Output, next to the hero's frames in generated/sprites/:
   png/zombie_<anim>_<dir>/frame_N.png, png/zombie_<anim>_<dir>.png (sheet), png/zombie_<anim>_<dir>.gif
   zombie.json: cell, anchor, frame counts and fps
@@ -19,7 +20,12 @@ from slice_sheet import remove_background
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "generated" / "sprites"
-SHEETS = {"zombie_sheet.png": ["idle", "walk", "attack", "jump"], "zombie_hit.png": ["hit"]}
+# sheet -> (animation names in reading order, (animation, frame) whose body height is the standing height)
+# each sheet is scaled on its own: the generator draws the character at a different size on every sheet
+SHEETS = {
+    "zombie_sheet.png": (["idle", "walk", "attack", "jump"], ("idle", 0)),
+    "zombie_hit.png": (["hit"], ("hit", 0)),  # surprise pose: standing straight, hands at forehead level
+}
 FPS = {"idle": 4, "walk": 8, "attack": 10, "jump": 10, "hit": 8}
 MIN_BLOB = 2000     # smaller blobs are specks
 ROW_GAP = 25        # vertical gap (px) that separates rows of groups
@@ -83,6 +89,14 @@ def frames_from_group(labels, rgba, group):
     return out
 
 
+def main_body_height(frame):
+    """Height of the largest blob: the character without detached stars or puffs."""
+    labels, n = ndimage.label(frame[..., 3] > 0)
+    sizes = ndimage.sum(np.ones_like(labels), labels, range(1, n + 1))
+    ys = np.nonzero(labels == int(np.argmax(sizes)) + 1)[0]
+    return ys.max() - ys.min() + 1
+
+
 def head_center_x(frame):
     """Horizontal center of the forehead band (8-20% of the height), where the arms cannot reach."""
     a = frame[..., 3] > 0
@@ -92,9 +106,28 @@ def head_center_x(frame):
     return np.nonzero(band)[1].mean()
 
 
-def place(frame, scale, cell, anchor):
+def scaled(frame, scale):
     im = Image.fromarray(frame, "RGBA")
-    im = im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))), Image.LANCZOS)
+    return im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))), Image.LANCZOS)
+
+
+def fit_cell(images, cell, anchor):
+    """The hero's cell and anchor, grown so that every image fits with its feet on the anchor's baseline
+    and its head center on the anchor's vertical axis."""
+    w, h = cell
+    ax, ay = anchor
+    for im in images:
+        arr = np.asarray(im)
+        ys = np.nonzero(arr[..., 3] > 0)[0]
+        cx, feet = head_center_x(arr), ys.max()
+        ax = max(ax, int(np.ceil(cx)) + 8)
+        ay = max(ay, int(feet) + 8)
+        w = max(w, ax + (im.width - int(np.floor(cx))) + 8)
+        h = max(h, ay + (im.height - int(feet)) + 8)
+    return (w, h), (ax, ay)
+
+
+def place(im, cell, anchor):
     arr = np.asarray(im)
     ys = np.nonzero(arr[..., 3] > 0)[0]
     cx = head_center_x(arr)
@@ -123,8 +156,8 @@ def save_set(cells, name, fps):
 
 if __name__ == "__main__":
     cell, anchor, hero_height = hero_metrics()
-    anims = {}
-    for sheet, names in SHEETS.items():
+    anims, scales = {}, {}
+    for sheet, (names, ref) in SHEETS.items():
         rgba = remove_background(np.asarray(Image.open(ROOT / sheet).convert("RGB")))
         labels, bl = blobs(rgba)
         if len(names) == 1:
@@ -134,17 +167,24 @@ if __name__ == "__main__":
             groups = [g for row in rows for g in cluster(row, "x0", "x1", GROUP_GAP)]
         if len(groups) != len(names):
             sys.exit(f"{sheet}: expected {len(names)} groups, found {len(groups)}: {[len(g) for g in groups]}")
-        anims.update({name: frames_from_group(labels, rgba, g) for name, g in zip(names, groups)})
-    # standing height from the idle frames: feet to the top of the head
-    idle_h = np.median([f.shape[0] for f in anims["idle"]])
-    scale = hero_height / idle_h
-    print(f"hero height {hero_height:.0f}px, zombie idle height {idle_h:.0f}px -> scale x{scale:.2f}")
-    meta = {"cell": {"w": cell[0], "h": cell[1]}, "anchor": {"x": anchor[0], "y": anchor[1]}, "animations": {}}
+        found = {name: frames_from_group(labels, rgba, g) for name, g in zip(names, groups)}
+        standing = main_body_height(found[ref[0]][ref[1]])
+        scale = hero_height / standing
+        print(f"{sheet}: standing height {standing}px, hero {hero_height:.0f}px -> scale x{scale:.2f}")
+        anims.update(found)
+        scales.update({name: scale for name in names})
+    meta = {"animations": {}}
     for name, frames in anims.items():
-        cells = [place(f, scale, cell, anchor) for f in frames]
+        images = [scaled(f, scales[name]) for f in frames]
+        a_cell, a_anchor = fit_cell(images, cell, anchor)
+        cells = [place(im, a_cell, a_anchor) for im in images]
         save_set(cells, f"zombie_{name}_right", FPS[name])
         save_set([c.transpose(Image.FLIP_LEFT_RIGHT) for c in cells], f"zombie_{name}_left", FPS[name])
         for side in ("right", "left"):
-            meta["animations"][f"zombie_{name}_{side}"] = {"frames": len(frames), "fps": FPS[name]}
-        print(f"zombie_{name}: {len(frames)} frames")
+            ax = a_anchor[0] if side == "right" else a_cell[0] - a_anchor[0]
+            meta["animations"][f"zombie_{name}_{side}"] = {
+                "frames": len(frames), "fps": FPS[name],
+                "cell": {"w": a_cell[0], "h": a_cell[1]}, "anchor": {"x": ax, "y": a_anchor[1]}}
+        grown = "" if a_cell == cell else f", cell grown to {a_cell[0]}x{a_cell[1]}"
+        print(f"zombie_{name}: {len(frames)} frames{grown}")
     (OUT / "zombie.json").write_text(json.dumps(meta, indent=2) + "\n")
