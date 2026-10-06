@@ -182,10 +182,12 @@ def save(name, cells, size, fps, tmp_dir):
 
 
 if __name__ == "__main__":
-    for old in ("png", "svg"):
-        shutil.rmtree(OUT / old, ignore_errors=True)
-    for stale in OUT.glob("*_*"):  # output of the earlier slice_sheet.py runs
-        shutil.rmtree(stale) if stale.is_dir() else stale.unlink()
+    for anim in ANIMATIONS:  # only this character's output; zombie_* from build_zombie.py stays
+        for kind in ("png", "svg"):
+            for side in ("right", "left"):
+                shutil.rmtree(OUT / kind / f"{anim}_{side}", ignore_errors=True)
+                for f in (OUT / kind).glob(f"{anim}_{side}.*"):
+                    f.unlink()
     tmp_dir = OUT / ".trace_tmp"
     tmp_dir.mkdir(parents=True, exist_ok=True)
 
