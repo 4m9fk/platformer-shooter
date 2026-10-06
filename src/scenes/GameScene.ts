@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { BLINK_TIME, CAMERA_LEAD, FADE_TIME, FALL_MARGIN, GAME_H, GAME_W, PARALLAX, TILE } from '../config';
+import { BLINK_TIME, CAMERA_LEAD, DEBRIS, FADE_TIME, FALL_MARGIN, GAME_H, GAME_W, PARALLAX, TILE } from '../config';
+import { Bolt } from '../entities/Bolt';
 import { Hero } from '../entities/Hero';
 import type { Intent } from '../input/Intent';
 import { Grid } from '../levels/grid';
@@ -14,6 +15,8 @@ export class GameScene extends Phaser.Scene {
   private platforms!: Phaser.Physics.Arcade.StaticGroup;
   private crates!: Phaser.Physics.Arcade.StaticGroup;
   private flag!: Phaser.Physics.Arcade.Image;
+  private bolts!: Phaser.Physics.Arcade.Group;
+  private sparks!: Phaser.GameObjects.Particles.ParticleEmitter;
   private layers: Phaser.GameObjects.TileSprite[] = [];
   private respawning = false;
 
@@ -42,6 +45,22 @@ export class GameScene extends Phaser.Scene {
     this.hero = new Hero(this, ...this.feet(this.level.start), this.registry.get('intent') as Intent);
     this.hero.setCollideWorldBounds(true);
     this.physics.add.collider(this.hero, [this.solids, this.platforms, this.crates]);
+    this.bolts = this.physics.add.group({ allowGravity: false });
+    this.sparks = this.add.particles(0, 0, 'spark', {
+      speed: { min: 80, max: 260 },
+      angle: { min: 0, max: 360 },
+      lifespan: 350,
+      scale: { start: 1, end: 0 },
+      gravityY: 900,
+      emitting: false,
+    }).setDepth(5);
+    this.hero.onFire = (x, y, dir) => this.fireBolt(x, y, dir);
+    this.physics.add.overlap(this.bolts, this.solids, (b) => this.boltHit(b as Bolt));
+    this.physics.add.overlap(this.bolts, this.crates, (b, c) => {
+      if (!(b as Bolt).active) return;
+      this.boltHit(b as Bolt);
+      this.breakCrate(c as Phaser.Physics.Arcade.Sprite);
+    });
 
     const cam = this.cameras.main;
     cam.setBounds(0, 0, worldW, worldH);
@@ -95,6 +114,31 @@ export class GameScene extends Phaser.Scene {
     }
     const [fx, fy] = this.feet(this.level.flag);
     this.flag = this.physics.add.staticImage(fx, fy, 'flag').setOrigin(0.5, 1).refreshBody();
+  }
+
+  private fireBolt(x: number, y: number, dir: 1 | -1) {
+    const bolt = new Bolt(this, x, y);
+    this.bolts.add(bolt);
+    bolt.launch(dir);
+  }
+
+  private boltHit(bolt: Bolt) {
+    if (!bolt.active) return; // already spent on something else this frame
+    this.sparks.explode(10, bolt.x, bolt.y);
+    bolt.destroy();
+  }
+
+  /** Crate is gone for good: from physics, from the patrol grid, in a burst of debris. */
+  private breakCrate(crate: Phaser.Physics.Arcade.Sprite) {
+    const cell = crate.getData('cell') as Cell;
+    this.grid.removeCrate(cell.col, cell.row);
+    for (let i = 0; i < DEBRIS; i++) {
+      const d = this.physics.add.image(crate.x, crate.y, 'debris');
+      d.setVelocity(Phaser.Math.Between(-220, 220), Phaser.Math.Between(-520, -220));
+      d.setAngularVelocity(Phaser.Math.Between(-400, 400));
+      this.tweens.add({ targets: d, alpha: 0, delay: 400, duration: 300, onComplete: () => d.destroy() });
+    }
+    crate.destroy();
   }
 
   /** Blink, fade to black, back to the start. Zombies and crates stay as they are. */
