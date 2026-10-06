@@ -2,11 +2,10 @@ import Phaser from 'phaser';
 import { AtlasGame, applyAnchor, atlasGame, fitBody } from '../atlas';
 import { BOLT_FRAME, CROUCH_TIME, HERO_SCALE, JUMP_SPEED, LAND_TIME, STOMP_BOUNCE, WALK_SPEED } from '../config';
 import type { Intent } from '../input/Intent';
-import { jumpAirFrame } from './jumpFrame';
+import { JumpPhase, jumpAirFrame, swallowsJump } from './jumpFrame';
 
 export type HeroMode = 'idle' | 'walk' | 'jump' | 'shoot' | 'frozen';
 export type Facing = 1 | -1;
-type JumpPhase = 'crouch' | 'air' | 'land';
 
 /** The boy with the blaster. Reads only the Intent; x/y is the point between his feet. */
 export class Hero extends Phaser.Physics.Arcade.Sprite {
@@ -112,7 +111,7 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
 
   private stepJump(delta: number, dir: number, onGround: boolean, held: boolean) {
     this.phaseTime += delta;
-    this.intent.consume('jump');
+    if (swallowsJump(this.phase)) this.intent.consume('jump');
     this.intent.consume('shoot'); // no shooting in the air: there are no frames for it
     if (dir !== 0) this.face(dir as Facing);
     this.setVelocityX(this.phase === 'land' ? 0 : dir * WALK_SPEED);

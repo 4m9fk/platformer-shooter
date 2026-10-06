@@ -6,3 +6,10 @@ export function jumpAirFrame(vy: number, jumpSpeed: number): 1 | 2 | 3 | 4 {
   if (vy <= apex) return 3;
   return 4;
 }
+
+export type JumpPhase = 'crouch' | 'air' | 'land';
+
+/** A jump pressed mid-jump is dropped; one pressed on the landing frames waits for the next jump. */
+export function swallowsJump(phase: JumpPhase): boolean {
+  return phase !== 'land';
+}

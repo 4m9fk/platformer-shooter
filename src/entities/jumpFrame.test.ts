@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { jumpAirFrame } from './jumpFrame';
+import { jumpAirFrame, swallowsJump } from './jumpFrame';
 
 // Phaser y grows downward: negative vy is rising.
 describe('jumpAirFrame', () => {
@@ -13,4 +13,14 @@ describe('jumpAirFrame', () => {
   });
   it('falling', () => expect(jumpAirFrame(400, S)).toBe(4));
   it('half-speed short hop still starts on the rising frame', () => expect(jumpAirFrame(-350, S)).toBe(2));
+});
+
+describe('swallowsJump', () => {
+  it('drops a jump pressed while crouching or in the air (no double jump)', () => {
+    expect(swallowsJump('crouch')).toBe(true);
+    expect(swallowsJump('air')).toBe(true);
+  });
+  it('keeps a jump pressed during the landing frames for the next jump', () => {
+    expect(swallowsJump('land')).toBe(false);
+  });
 });

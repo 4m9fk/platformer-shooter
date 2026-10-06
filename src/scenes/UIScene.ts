@@ -88,6 +88,10 @@ export class UIScene extends Phaser.Scene {
       circle.setInteractive(new Phaser.Geom.Circle(r, r, r + BUTTON_SLOP), Phaser.Geom.Circle.Contains);
       circle.on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, (p: Phaser.Input.Pointer) => this.intent.pressPointer(p.id, action));
       circle.on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, (p: Phaser.Input.Pointer) => this.intent.releasePointer(p.id));
+      // a thumb rolled from one button onto another presses the new one, like a D-pad
+      circle.on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, (p: Phaser.Input.Pointer) => {
+        if (p.isDown) this.intent.pressPointer(p.id, action);
+      });
       const label = this.add.text(0, 0, text, { fontFamily: FONT, fontSize: '52px', color: '#ffffff' }).setOrigin(0.5).setAlpha(0.9);
       this.buttons.push({ action, circle, label });
     }

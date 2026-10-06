@@ -45,6 +45,14 @@ describe('Intent', () => {
     expect(i.held('right')).toBe(false);
   });
 
+  it('a finger sliding onto another button switches to its action', () => {
+    const i = new Intent();
+    i.pressPointer(1, 'left');
+    i.releasePointer(1); // pointerout of ←
+    i.pressPointer(1, 'right'); // pointerover of → with the finger still down
+    expect(i.state).toEqual({ left: false, right: true, jump: false, shoot: false });
+  });
+
   it('clearKeyboard (window blur) drops keys but keeps fingers, clearPointers the reverse', () => {
     const i = new Intent();
     i.pressKey('ArrowRight', 'right');
