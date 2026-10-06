@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { createAnims, loadAtlas } from '../atlas';
 import { GAME_H, GAME_W } from '../config';
+import { makeTextures } from '../textures/placeholders';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -18,6 +19,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
+    makeTextures(this);
     createAnims(this, 'hero');
     createAnims(this, 'zombie');
     this.scene.start('Game');
