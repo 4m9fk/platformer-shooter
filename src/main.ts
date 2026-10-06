@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_H, GAME_W, GRAVITY, SKY_TOP } from './config';
 import { Intent } from './input/Intent';
 import { bindKeyboard } from './input/keyboard';
+import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
 
 const intent = new Intent();
@@ -18,5 +19,5 @@ new Phaser.Game({
   },
   input: { activePointers: 4 }, // run, jump and shoot with separate fingers
   callbacks: { preBoot: (game) => game.registry.set('intent', intent) },
-  scene: [GameScene],
+  scene: [BootScene, GameScene],
 });
