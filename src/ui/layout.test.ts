@@ -28,3 +28,29 @@ describe('hudLayout', () => {
     expect(l.buttons.jump.y).toBe(720 - M - R - BUTTON_SIZE - M);
   });
 });
+
+describe('hudLayout with safe-area insets', () => {
+  const insets = { top: 10, right: 44, bottom: 20, left: 44 };
+
+  it('keeps buttons clear of the notch and the home indicator', () => {
+    const l = hudLayout(1170, 540, insets);
+    expect(l.buttons.left).toEqual({ x: 44 + M + R, y: 540 - 20 - M - R });
+    expect(l.buttons.right.x).toBe(44 + 2 * M + 3 * R);
+    expect(l.buttons.shoot).toEqual({ x: 1170 - 44 - M - R, y: 540 - 20 - M - R });
+    expect(l.buttons.jump.y).toBe(540 - 20 - M - R - BUTTON_SIZE - M);
+  });
+
+  it('keeps the counter and ⛶ below the top inset and inside the sides', () => {
+    const l = hudLayout(1170, 540, insets);
+    expect(l.counter).toEqual({ x: 44 + M, y: 10 + 16 });
+    expect(l.fullscreen).toEqual({ x: 1170 - 44 - M, y: 10 + 12 });
+  });
+
+  it('centres overlays on the whole screen, not the safe area', () => {
+    expect(hudLayout(1170, 540, insets).center).toEqual({ x: 585, y: 270 });
+  });
+
+  it('without insets the counter sits at the margin', () => {
+    expect(hudLayout(960, 540).counter).toEqual({ x: M, y: 16 });
+  });
+});

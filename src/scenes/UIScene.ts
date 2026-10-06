@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
-import { BUTTON_MARGIN, BUTTON_SIZE, BUTTON_SLOP } from '../config';
+import { BUTTON_SIZE, BUTTON_SLOP } from '../config';
 import type { Action, Intent } from '../input/Intent';
 import { hudLayout } from '../ui/layout';
+import { safeAreaInsets } from '../viewport';
 
 const FONT = 'system-ui, -apple-system, sans-serif';
 const TEXT = { fontFamily: FONT, color: '#ffffff', stroke: '#1d2b3a', strokeThickness: 6 };
@@ -25,7 +26,7 @@ export class UIScene extends Phaser.Scene {
   create() {
     this.intent = this.registry.get('intent') as Intent;
     this.buttons = [];
-    this.counter = this.add.text(BUTTON_MARGIN, 16, '', { ...TEXT, fontSize: '30px' });
+    this.counter = this.add.text(0, 0, '', { ...TEXT, fontSize: '30px' });
     if ('ontouchstart' in window) this.addButtons();
     this.addFullscreenButton();
     this.win = this.makeWinScreen();
@@ -64,7 +65,11 @@ export class UIScene extends Phaser.Scene {
   /** Puts every edge-bound object where hudLayout says for the current game size. */
   private layout() {
     const { width, height } = this.scale;
-    const l = hudLayout(width, height);
+    // safe-area insets come in CSS pixels; displayScale converts them to game pixels
+    const k = this.scale.displayScale.x;
+    const css = safeAreaInsets();
+    const l = hudLayout(width, height, { top: css.top * k, right: css.right * k, bottom: css.bottom * k, left: css.left * k });
+    this.counter.setPosition(l.counter.x, l.counter.y);
     for (const b of this.buttons) {
       const p = l.buttons[b.action];
       b.circle.setPosition(p.x, p.y);

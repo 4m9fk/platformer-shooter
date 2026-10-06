@@ -5,11 +5,15 @@ import { bindKeyboard } from './input/keyboard';
 import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
 import { UIScene } from './scenes/UIScene';
+import { fitToViewport } from './viewport';
 
 const intent = new Intent();
 bindKeyboard(intent);
 
-const game = new Phaser.Game({
+let game: Phaser.Game | undefined;
+fitToViewport(document.getElementById('game')!, () => game?.isBooted && game.scale.refresh());
+
+game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
   backgroundColor: SKY_TOP,
