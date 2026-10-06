@@ -74,7 +74,8 @@ def frames_from_group(labels, rgba, group):
         if frames:
             last = frames[-1]
             overlap = min(last["x1"], b["x1"]) - max(last["x0"], b["x0"])
-            if overlap > FRAME_OVERLAP * min(last["x1"] - last["x0"], b["x1"] - b["x0"]):
+            center_inside = last["x0"] <= (b["x0"] + b["x1"]) / 2 <= last["x1"]  # stars and puffs above or beside
+            if center_inside or overlap > FRAME_OVERLAP * min(last["x1"] - last["x0"], b["x1"] - b["x0"]):
                 last["ids"].append(b["id"])
                 last["x0"], last["x1"] = min(last["x0"], b["x0"]), max(last["x1"], b["x1"])
                 continue
