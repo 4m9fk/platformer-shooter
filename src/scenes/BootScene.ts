@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { createAnims, loadAtlas } from '../atlas';
-import { GAME_H, GAME_W } from '../config';
 import { makeTextures } from '../textures/placeholders';
 
 export class BootScene extends Phaser.Scene {
@@ -10,8 +9,10 @@ export class BootScene extends Phaser.Scene {
 
   preload() {
     const w = 400;
-    this.add.rectangle(GAME_W / 2, GAME_H / 2, w + 8, 32).setStrokeStyle(3, 0xffffff);
-    const bar = this.add.rectangle(GAME_W / 2 - w / 2, GAME_H / 2, 0, 24, 0xffffff).setOrigin(0, 0.5);
+    const cx = this.scale.width / 2;
+    const cy = this.scale.height / 2;
+    this.add.rectangle(cx, cy, w + 8, 32).setStrokeStyle(3, 0xffffff);
+    const bar = this.add.rectangle(cx - w / 2, cy, 0, 24, 0xffffff).setOrigin(0, 0.5);
     this.load.on(Phaser.Loader.Events.PROGRESS, (p: number) => (bar.width = w * p));
     this.load.setBaseURL(import.meta.env.BASE_URL);
     loadAtlas(this, 'hero');

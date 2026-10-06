@@ -13,7 +13,8 @@ const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
   backgroundColor: SKY_TOP,
-  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: GAME_W, height: GAME_H },
+  // EXPAND keeps 960×540 as the minimum and widens (or heightens) the game to fill the screen without bars
+  scale: { mode: Phaser.Scale.EXPAND, autoCenter: Phaser.Scale.CENTER_BOTH, width: GAME_W, height: GAME_H },
   physics: {
     default: 'arcade',
     arcade: { gravity: { x: 0, y: GRAVITY }, debug: new URLSearchParams(location.search).has('debug') },

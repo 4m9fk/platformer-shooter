@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BLINK_TIME, CAMERA_LEAD, DEBRIS, FADE_TIME, FALL_MARGIN, GAME_H, GAME_W, PARALLAX, TILE } from '../config';
+import { BLINK_TIME, CAMERA_LEAD, DEBRIS, FADE_TIME, FALL_MARGIN, GAME_W, PARALLAX, TILE } from '../config';
 import { Bolt } from '../entities/Bolt';
 import { Hero } from '../entities/Hero';
 import { Zombie } from '../entities/Zombie';
@@ -19,6 +19,7 @@ export class GameScene extends Phaser.Scene {
   private bolts!: Phaser.Physics.Arcade.Group;
   private sparks!: Phaser.GameObjects.Particles.ParticleEmitter;
   private zombies!: Phaser.Physics.Arcade.Group;
+  private sky!: Phaser.GameObjects.Image;
   private layers: Phaser.GameObjects.TileSprite[] = [];
   private respawning = false;
 
@@ -105,13 +106,26 @@ export class GameScene extends Phaser.Scene {
   }
 
   private addBackground() {
-    const horizon = GAME_H - 2 * TILE; // hills stand on the top of the two-tile ground
-    this.add.image(0, 0, 'sky').setOrigin(0).setScrollFactor(0).setDisplaySize(GAME_W, GAME_H);
+    this.sky = this.add.image(0, 0, 'sky').setOrigin(0).setScrollFactor(0);
     this.layers = [
       this.add.tileSprite(0, 0, GAME_W, 260, 'clouds'),
-      this.add.tileSprite(0, horizon - 260 + 40, GAME_W, 260, 'hills-far'),
-      this.add.tileSprite(0, horizon - 200 + 60, GAME_W, 200, 'hills-near'),
+      this.add.tileSprite(0, 0, GAME_W, 260, 'hills-far'),
+      this.add.tileSprite(0, 0, GAME_W, 200, 'hills-near'),
     ].map((layer) => layer.setOrigin(0).setScrollFactor(0));
+    this.fitBackground();
+    // Scale.EXPAND: the game width follows the screen, so the backdrop must cover it on every resize
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.fitBackground, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.off(Phaser.Scale.Events.RESIZE, this.fitBackground, this));
+  }
+
+  private fitBackground() {
+    const { width, height } = this.scale;
+    const horizon = this.level.height * TILE - 2 * TILE; // hills stand on the top of the two-tile ground
+    this.sky.setDisplaySize(width, height);
+    const [clouds, far, near] = this.layers;
+    clouds.setSize(width, 260);
+    far.setSize(width, 260).setY(horizon - 260 + 40);
+    near.setSize(width, 200).setY(horizon - 200 + 60);
   }
 
   private addTiles() {
