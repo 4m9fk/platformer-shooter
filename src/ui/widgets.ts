@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { safeAreaInsets } from '../viewport';
 import type { Insets } from './layout';
+import { Tap } from './tap';
 
 export const FONT = 'system-ui, -apple-system, sans-serif';
 export const TEXT = { fontFamily: FONT, color: '#ffffff', stroke: '#1d2b3a', strokeThickness: 6 };
@@ -26,11 +27,21 @@ export function gameInsets(scene: Phaser.Scene): Insets {
   return { top: css.top * k, right: css.right * k, bottom: css.bottom * k, left: css.left * k };
 }
 
+/** Makes an object clickable through a Tap: a finger that was not pressed on it does nothing when it lifts. */
+export function onTap(target: Phaser.GameObjects.GameObject, onClick: () => void) {
+  const tap = new Tap();
+  target.setInteractive({ useHandCursor: true });
+  target.on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, (p: Phaser.Input.Pointer) => tap.press(p.id));
+  target.on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, (p: Phaser.Input.Pointer) => tap.cancel(p.id));
+  target.on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, (p: Phaser.Input.Pointer) => {
+    if (tap.release(p.id)) onClick();
+  });
+}
+
 export function makeButton(scene: Phaser.Scene, x: number, y: number, label: string, onClick: () => void) {
   const rect = scene.add.rectangle(x, y, BUTTON_W, BUTTON_H, 0x58b947).setStrokeStyle(5, 0xffffff);
   const text = scene.add.text(x, y, label, { ...TEXT, fontSize: '36px' }).setOrigin(0.5);
-  rect.setInteractive({ useHandCursor: true });
-  rect.on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, onClick);
+  onTap(rect, onClick);
   return [rect, text] as const;
 }
 

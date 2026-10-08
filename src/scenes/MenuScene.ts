@@ -5,7 +5,7 @@ import { LEVELS } from '../levels/levels';
 import { makeBackdrop } from '../textures/placeholders';
 import { menuLayout } from '../ui/layout';
 import { lockLandscape, watchOrientation } from '../ui/orientation';
-import { TEXT, gameInsets, makeRotateOverlay, placeOverlay, type Overlay } from '../ui/widgets';
+import { TEXT, gameInsets, makeRotateOverlay, onTap, placeOverlay, type Overlay } from '../ui/widgets';
 
 /** Title and one tile per level: number and best stars when open, a lock otherwise. */
 export class MenuScene extends Phaser.Scene {
@@ -51,10 +51,7 @@ export class MenuScene extends Phaser.Scene {
       ? this.add.text(0, -14, String(i + 1), { ...TEXT, fontSize: '60px' }).setOrigin(0.5)
       : this.add.image(0, -12, 'lock');
     const row = [0, 1, 2].map((s) => this.add.image((s - 1) * 36, 44, s < stars ? 'star' : 'star-empty').setScale(0.4));
-    if (open) {
-      bg.setInteractive({ useHandCursor: true });
-      bg.on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => this.play(i));
-    }
+    if (open) onTap(bg, () => this.play(i));
     return this.add.container(0, 0, [bg, mark, ...row]);
   }
 

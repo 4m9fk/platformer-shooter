@@ -5,7 +5,7 @@ import { LEVELS } from '../levels/levels';
 import { hudLayout } from '../ui/layout';
 import { lockLandscape, watchOrientation } from '../ui/orientation';
 import { gameRuns, nextScreen, type Screen } from '../ui/screen';
-import { FONT, TEXT, gameInsets, makeOverlay, makeRotateOverlay, placeOverlay, type Overlay, type OverlayButton } from '../ui/widgets';
+import { FONT, TEXT, gameInsets, makeOverlay, onTap, makeRotateOverlay, placeOverlay, type Overlay, type OverlayButton } from '../ui/widgets';
 
 const HEART_STEP = 46;
 
@@ -37,8 +37,8 @@ export class UIScene extends Phaser.Scene {
     for (let i = 0; i < LIVES; i++) this.hearts.push(this.add.image(0, 0, 'heart'));
     if ('ontouchstart' in window) this.addButtons();
     this.addFullscreenButton();
-    this.pauseButton = this.add.image(0, 0, 'pause').setOrigin(1, 0).setInteractive({ useHandCursor: true });
-    this.pauseButton.on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => this.show('pause'));
+    this.pauseButton = this.add.image(0, 0, 'pause').setOrigin(1, 0);
+    onTap(this.pauseButton, () => this.show('pause'));
     this.input.keyboard?.on('keydown-ESC', () => this.togglePause());
     this.rotate = makeRotateOverlay(this);
     this.layout();
@@ -166,9 +166,7 @@ export class UIScene extends Phaser.Scene {
     if (!this.sys.game.device.fullscreen.available) return;
     const b = this.add.text(0, 0, '⛶', { ...TEXT, fontSize: '40px' }).setOrigin(1, 0);
     this.fullscreen = b;
-    b.setInteractive({ useHandCursor: true });
     // fullscreen must start from pointerup: browsers allow it only inside a user gesture
-    b.on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () =>
-      this.scale.isFullscreen ? this.scale.stopFullscreen() : this.scale.startFullscreen());
+    onTap(b, () => (this.scale.isFullscreen ? this.scale.stopFullscreen() : this.scale.startFullscreen()));
   }
 }
