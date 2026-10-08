@@ -1,4 +1,4 @@
-import { BUTTON_MARGIN, BUTTON_SIZE } from '../config';
+import { BUTTON_MARGIN, BUTTON_SIZE, MENU_GAP, MENU_TILE } from '../config';
 import type { Action } from '../input/Intent';
 
 export interface Point {
@@ -42,6 +42,30 @@ export function hudLayout(width: number, height: number, insets: Insets = NO_INS
     },
     counter: { x: left + m, y: insets.top + 16 },
     fullscreen: { x: right - m, y: insets.top + 12 },
+    center: { x: width / 2, y: height / 2 },
+  };
+}
+
+export interface MenuLayout {
+  title: Point; // centre of the title
+  tiles: Point[]; // centre of each level tile
+  tileScale: number; // 1 = MENU_TILE; less when the row would not fit
+  center: Point;
+}
+
+/** One row of level tiles centred on the safe area, scaled down when the screen is too narrow for them. */
+export function menuLayout(width: number, height: number, count: number, insets: Insets = NO_INSETS): MenuLayout {
+  const left = insets.left + BUTTON_MARGIN;
+  const right = width - insets.right - BUTTON_MARGIN;
+  const fit = (right - left - (count - 1) * MENU_GAP) / count;
+  const size = Math.min(MENU_TILE, fit);
+  const cx = (left + right) / 2;
+  const first = cx - ((count - 1) * (size + MENU_GAP)) / 2;
+  const y = height / 2 + 30;
+  return {
+    title: { x: cx, y: insets.top + 90 },
+    tiles: Array.from({ length: count }, (_, i) => ({ x: first + i * (size + MENU_GAP), y })),
+    tileScale: size / MENU_TILE,
     center: { x: width / 2, y: height / 2 },
   };
 }

@@ -2,10 +2,8 @@ import Phaser from 'phaser';
 import { BUTTON_SIZE, BUTTON_SLOP } from '../config';
 import type { Action, Intent } from '../input/Intent';
 import { hudLayout } from '../ui/layout';
-import { safeAreaInsets } from '../viewport';
-
-const FONT = 'system-ui, -apple-system, sans-serif';
-const TEXT = { fontFamily: FONT, color: '#ffffff', stroke: '#1d2b3a', strokeThickness: 6 };
+import { lockLandscape, watchOrientation } from '../ui/orientation';
+import { FONT, TEXT, gameInsets, makeRotateOverlay, placeOverlay, type Overlay } from '../ui/widgets';
 
 /** Runs on top of 'Game' for the whole session. Reads the registry every frame instead of subscribing to events. */
 export class UIScene extends Phaser.Scene {
@@ -16,8 +14,7 @@ export class UIScene extends Phaser.Scene {
   private win!: Phaser.GameObjects.Container;
   private winShade!: Phaser.GameObjects.Rectangle;
   private winText!: Phaser.GameObjects.Text;
-  private rotate!: Phaser.GameObjects.Container;
-  private rotateShade!: Phaser.GameObjects.Rectangle;
+  private rotate!: Overlay;
 
   constructor() {
     super('UI');
@@ -30,7 +27,7 @@ export class UIScene extends Phaser.Scene {
     if ('ontouchstart' in window) this.addButtons();
     this.addFullscreenButton();
     this.win = this.makeWinScreen();
-    this.rotate = this.makeRotateOverlay();
+    this.rotate = makeRotateOverlay(this);
     this.layout();
     // Scale.EXPAND: the game width follows the screen, so everything tied to an edge moves on resize
     this.scale.on(Phaser.Scale.Events.RESIZE, this.layout, this);
@@ -41,15 +38,16 @@ export class UIScene extends Phaser.Scene {
     this.input.on(Phaser.Input.Events.POINTER_UP_OUTSIDE, release);
     this.input.once(Phaser.Input.Events.POINTER_DOWN, lockLandscape);
 
-    const check = () => this.checkOrientation();
-    window.addEventListener('resize', check);
-    window.addEventListener('orientationchange', check);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      this.scale.off(Phaser.Scale.Events.RESIZE, this.layout, this);
-      window.removeEventListener('resize', check);
-      window.removeEventListener('orientationchange', check);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.off(Phaser.Scale.Events.RESIZE, this.layout, this));
+    watchOrientation(this, (portrait) => {
+      this.rotate.container.setVisible(portrait);
+      if (portrait) {
+        this.intent.clearPointers();
+        if (this.scene.isActive('Game')) this.scene.pause('Game');
+      } else if (this.scene.isPaused('Game')) {
+        this.scene.resume('Game');
+      }
     });
-    check();
   }
 
   update() {
@@ -67,10 +65,7 @@ export class UIScene extends Phaser.Scene {
   /** Puts every edge-bound object where hudLayout says for the current game size. */
   private layout() {
     const { width, height } = this.scale;
-    // safe-area insets come in CSS pixels; displayScale converts them to game pixels
-    const k = this.scale.displayScale.x;
-    const css = safeAreaInsets();
-    const l = hudLayout(width, height, { top: css.top * k, right: css.right * k, bottom: css.bottom * k, left: css.left * k });
+    const l = hudLayout(width, height, gameInsets(this));
     this.counter.setPosition(l.counter.x, l.counter.y);
     for (const b of this.buttons) {
       const p = l.buttons[b.action];
@@ -79,11 +74,9 @@ export class UIScene extends Phaser.Scene {
     }
     this.fullscreen?.setPosition(l.fullscreen.x, l.fullscreen.y);
     this.win.setPosition(l.center.x, l.center.y);
-    this.rotate.setPosition(l.center.x, l.center.y);
-    for (const shade of [this.winShade, this.rotateShade]) {
-      shade.setSize(width, height);
-      shade.input?.hitArea.setSize(width, height); // the hit area is not resized with the shape
-    }
+    this.winShade.setSize(width, height);
+    this.winShade.input?.hitArea.setSize(width, height);
+    placeOverlay(this.rotate, width, height);
   }
 
   private addButtons() {
@@ -127,32 +120,5 @@ export class UIScene extends Phaser.Scene {
       this.scene.get('Game').scene.restart({ level: this.registry.get('levelIndex') });
     });
     return this.add.container(0, 0, [this.winShade, this.winText, button, label]).setDepth(10).setVisible(false);
-  }
-
-  private makeRotateOverlay() {
-    this.rotateShade = this.add.rectangle(0, 0, 1, 1, 0x1d2b3a, 0.95).setInteractive();
-    const text = this.add.text(0, 0, '↻\nПоверни телефон', { ...TEXT, fontSize: '64px', align: 'center' }).setOrigin(0.5);
-    return this.add.container(0, 0, [this.rotateShade, text]).setDepth(20).setVisible(false);
-  }
-
-  private checkOrientation() {
-    const portrait = window.innerHeight > window.innerWidth;
-    this.rotate.setVisible(portrait);
-    if (portrait) {
-      this.intent.clearPointers();
-      if (this.scene.isActive('Game')) this.scene.pause('Game');
-    } else if (this.scene.isPaused('Game')) {
-      this.scene.resume('Game');
-    }
-  }
-}
-
-/** Best effort: most browsers allow it only in fullscreen or an installed app, and say no otherwise. */
-function lockLandscape() {
-  try {
-    const orientation = screen.orientation as ScreenOrientation & { lock?: (o: string) => Promise<void> };
-    orientation.lock?.('landscape').catch(() => {});
-  } catch {
-    // no Screen Orientation API
   }
 }

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_H, GAME_W, TILE } from '../config';
+import { GAME_H, GAME_W, MENU_TILE, TILE } from '../config';
 import type { Theme } from '../levels/levels';
 
 /** Every non-character texture shared by all levels, drawn once. To reskin an object, replace its function with a PNG load. */
@@ -13,6 +13,11 @@ export function makeTextures(scene: Phaser.Scene) {
   makeBolt(scene);
   makeSpark(scene);
   makeDebris(scene);
+  makeStar(scene, 'star', true);
+  makeStar(scene, 'star-empty', false);
+  makeLock(scene);
+  makeTile(scene, 'tile-open', 0x58b947);
+  makeTile(scene, 'tile-locked', 0x7a8794);
 }
 
 /** Sky and both hill layers in the theme's colours, keys suffixed with theme.key. Drawn on first use, then reused. */
@@ -119,5 +124,35 @@ function makeDebris(scene: Phaser.Scene) {
   draw(scene, 'debris', 14, 14, (g) => {
     g.fillStyle(0xc98a3d).fillRect(0, 0, 14, 14);
     g.lineStyle(3, 0x7a4f1d).strokeRect(1.5, 1.5, 11, 11);
+  });
+}
+
+function makeStar(scene: Phaser.Scene, key: string, filled: boolean) {
+  const points = Array.from({ length: 10 }, (_, i) => {
+    const r = i % 2 === 0 ? 36 : 15;
+    const a = -Math.PI / 2 + (i * Math.PI) / 5;
+    return new Phaser.Math.Vector2(40 + r * Math.cos(a), 42 + r * Math.sin(a));
+  });
+  draw(scene, key, 80, 80, (g) => {
+    g.fillStyle(filled ? 0xffd23f : 0x000000, filled ? 1 : 0.3).fillPoints(points, true);
+    g.lineStyle(5, filled ? 0x1d2b3a : 0xffffff, filled ? 1 : 0.8).strokePoints(points, true);
+  });
+}
+
+function makeLock(scene: Phaser.Scene) {
+  draw(scene, 'lock', 48, 56, (g) => {
+    g.lineStyle(7, 0xffffff);
+    g.beginPath();
+    g.arc(24, 24, 13, Math.PI, 0);
+    g.strokePath();
+    g.fillStyle(0xffffff).fillRoundedRect(4, 24, 40, 30, 6);
+    g.fillStyle(0x7a8794).fillCircle(24, 37, 5);
+  });
+}
+
+function makeTile(scene: Phaser.Scene, key: string, color: number) {
+  draw(scene, key, MENU_TILE, MENU_TILE, (g) => {
+    g.fillStyle(color).fillRoundedRect(3, 3, MENU_TILE - 6, MENU_TILE - 6, 20);
+    g.lineStyle(5, 0xffffff).strokeRoundedRect(3, 3, MENU_TILE - 6, MENU_TILE - 6, 20);
   });
 }

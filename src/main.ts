@@ -4,6 +4,7 @@ import { Intent } from './input/Intent';
 import { bindKeyboard } from './input/keyboard';
 import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
+import { MenuScene } from './scenes/MenuScene';
 import { UIScene } from './scenes/UIScene';
 import { fitToViewport } from './viewport';
 
@@ -25,7 +26,7 @@ game = new Phaser.Game({
   },
   input: { activePointers: 4 }, // run, jump and shoot with separate fingers
   callbacks: { preBoot: (game) => game.registry.set('intent', intent) },
-  scene: [BootScene, GameScene, UIScene],
+  scene: [BootScene, MenuScene, GameScene, UIScene],
 });
 
 if (import.meta.env.DEV) Object.assign(window, { game }); // poke at it from the console while developing

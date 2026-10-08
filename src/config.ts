@@ -36,3 +36,6 @@ export const BUTTON_SLOP = 10; // hit circle radius beyond the drawn circle: the
 
 export const LIVES = 3;
 export const STAR_DELAY = 300; // pause between stars popping up on the win screen
+
+export const MENU_TILE = 140; // level tile side in the menu, shrinks on narrow screens
+export const MENU_GAP = 24;
