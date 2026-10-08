@@ -33,3 +33,6 @@ export const DEBRIS = 6;
 export const BUTTON_SIZE = 110;
 export const BUTTON_MARGIN = 24;
 export const BUTTON_SLOP = 10; // hit circle radius beyond the drawn circle: the zone is 20 px wider
+
+export const LIVES = 3;
+export const STAR_DELAY = 300; // pause between stars popping up on the win screen
