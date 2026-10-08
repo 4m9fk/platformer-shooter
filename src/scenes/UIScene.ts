@@ -55,10 +55,12 @@ export class UIScene extends Phaser.Scene {
   update() {
     const kills = this.registry.get('kills') ?? 0;
     const total = this.registry.get('zombiesTotal') ?? 0;
-    this.counter.setText(`Зомби: ${kills}/${total}`);
-    const won = this.registry.get('won') === true;
-    this.win.setVisible(won);
-    if (won) this.winText.setText(`Победа!\nЗомби: ${kills} из ${total}`);
+    const lives = this.registry.get('lives') ?? 0;
+    this.counter.setText(`Зомби: ${kills}/${total}   Жизни: ${lives}`);
+    const result = this.registry.get('result') as 'won' | 'lost' | null;
+    this.win.setVisible(result !== null);
+    if (result === 'won') this.winText.setText(`Победа!\nЗвёзды: ${this.registry.get('stars')}`);
+    if (result === 'lost') this.winText.setText('Попробуй ещё раз');
     for (const b of this.buttons) b.circle.setFillStyle(0xffffff, this.intent.held(b.action) ? 0.5 : 0.25);
   }
 
@@ -120,7 +122,7 @@ export class UIScene extends Phaser.Scene {
     const label = this.add.text(button.x, button.y, 'Ещё раз', { ...TEXT, fontSize: '40px' }).setOrigin(0.5);
     button.setInteractive({ useHandCursor: true });
     button.on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-      this.registry.set('won', false);
+      this.registry.set('result', null);
       this.intent.clearPointers();
       this.scene.get('Game').scene.restart({ level: this.registry.get('levelIndex') });
     });

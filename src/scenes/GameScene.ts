@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
-import { BLINK_TIME, CAMERA_LEAD, DEBRIS, FADE_TIME, FALL_MARGIN, GAME_W, PARALLAX, TILE } from '../config';
+import { BLINK_TIME, CAMERA_LEAD, DEBRIS, FADE_TIME, FALL_MARGIN, GAME_W, LIVES, PARALLAX, TILE } from '../config';
 import { Bolt } from '../entities/Bolt';
 import { zombieContact } from '../entities/contact';
 import { Hero } from '../entities/Hero';
+import { loadProgress, recordWin, safeStorage, saveProgress } from '../game/progress';
+import { starsFor } from '../game/stars';
 import { Zombie } from '../entities/Zombie';
 import type { Intent } from '../input/Intent';
 import { Grid } from '../levels/grid';
@@ -42,7 +44,14 @@ export class GameScene extends Phaser.Scene {
     this.def = LEVELS[this.levelIndex];
     this.level = parseLevel(this.def.map);
     this.grid = new Grid(this.level);
-    this.registry.set({ levelIndex: this.levelIndex, kills: 0, won: false, zombiesTotal: this.level.zombies.length });
+    this.registry.set({
+      levelIndex: this.levelIndex,
+      kills: 0,
+      zombiesTotal: this.level.zombies.length,
+      lives: LIVES,
+      result: null,
+      stars: 0,
+    });
     const worldW = this.level.width * TILE;
     const worldH = this.level.height * TILE;
     this.physics.world.setBounds(0, 0, worldW, worldH);
@@ -84,9 +93,9 @@ export class GameScene extends Phaser.Scene {
       this.killZombie(z as Zombie);
     });
     this.physics.add.overlap(this.hero, this.flag, () => {
-      if (this.registry.get('won') || this.respawning) return;
+      if (this.registry.get('result') || this.respawning) return;
       this.hero.freeze();
-      this.registry.set('won', true);
+      this.win();
     });
 
     const cam = this.cameras.main;
@@ -206,10 +215,24 @@ export class GameScene extends Phaser.Scene {
     this.registry.inc('kills', 1);
   }
 
-  /** Blink, fade to black, back to the start. Zombies and crates stay as they are. */
+  /** Stars, then the save, then the result: the win screen reads all three from the registry. */
+  private win() {
+    const stars = starsFor({
+      kills: this.registry.get('kills') as number,
+      zombiesTotal: this.level.zombies.length,
+      livesLost: LIVES - (this.registry.get('lives') as number),
+    });
+    const storage = safeStorage();
+    saveProgress(storage, recordWin(loadProgress(storage), this.def.id, stars));
+    this.registry.set({ stars, result: 'won' });
+  }
+
+  /** Blink, then back to the start while lives remain; zombies and crates stay as they are. No lives left: 'lost'. */
   private killHero() {
-    if (this.respawning) return;
+    if (this.respawning || this.registry.get('result')) return;
     this.respawning = true;
+    const lives = (this.registry.get('lives') as number) - 1;
+    this.registry.set('lives', lives);
     this.hero.die();
     this.tweens.add({
       targets: this.hero,
@@ -218,6 +241,8 @@ export class GameScene extends Phaser.Scene {
       yoyo: true,
       repeat: 2,
       onComplete: () => {
+        // respawning stays true after the last life: nothing may happen to the hero until a restart
+        if (lives === 0) return void this.registry.set('result', 'lost');
         const cam = this.cameras.main;
         cam.fadeOut(FADE_TIME, 0, 0, 0);
         cam.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
