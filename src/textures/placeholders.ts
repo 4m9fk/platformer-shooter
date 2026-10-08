@@ -1,12 +1,10 @@
 import Phaser from 'phaser';
-import { GAME_H, GAME_W, SKY_BOTTOM, SKY_TOP, TILE } from '../config';
+import { GAME_H, GAME_W, TILE } from '../config';
+import type { Theme } from '../levels/levels';
 
-/** Every non-character texture, drawn once. To reskin an object, replace its function with a PNG load. */
+/** Every non-character texture shared by all levels, drawn once. To reskin an object, replace its function with a PNG load. */
 export function makeTextures(scene: Phaser.Scene) {
-  makeSky(scene);
   makeClouds(scene);
-  makeHills(scene, 'hills-far', 260, 0x8fd18a, 60, 2);
-  makeHills(scene, 'hills-near', 200, 0x5fb35a, 45, 3);
   makeGround(scene, 'ground', false);
   makeGround(scene, 'ground-top', true);
   makePlatform(scene);
@@ -15,6 +13,14 @@ export function makeTextures(scene: Phaser.Scene) {
   makeBolt(scene);
   makeSpark(scene);
   makeDebris(scene);
+}
+
+/** Sky and both hill layers in the theme's colours, keys suffixed with theme.key. Drawn on first use, then reused. */
+export function makeBackdrop(scene: Phaser.Scene, theme: Theme) {
+  if (scene.textures.exists(`sky-${theme.key}`)) return;
+  makeSky(scene, `sky-${theme.key}`, theme.skyTop, theme.skyBottom);
+  makeHills(scene, `hills-far-${theme.key}`, 260, theme.hillsFar, 60, 2);
+  makeHills(scene, `hills-near-${theme.key}`, 200, theme.hillsNear, 45, 3);
 }
 
 const css = (c: number) => '#' + c.toString(16).padStart(6, '0');
@@ -26,12 +32,12 @@ function draw(scene: Phaser.Scene, key: string, w: number, h: number, paint: (g:
   g.destroy();
 }
 
-function makeSky(scene: Phaser.Scene) {
-  const tex = scene.textures.createCanvas('sky', 4, GAME_H)!;
+function makeSky(scene: Phaser.Scene, key: string, top: number, bottom: number) {
+  const tex = scene.textures.createCanvas(key, 4, GAME_H)!;
   const ctx = tex.getContext();
   const grad = ctx.createLinearGradient(0, 0, 0, GAME_H);
-  grad.addColorStop(0, css(SKY_TOP));
-  grad.addColorStop(1, css(SKY_BOTTOM));
+  grad.addColorStop(0, css(top));
+  grad.addColorStop(1, css(bottom));
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, 4, GAME_H);
   tex.refresh();

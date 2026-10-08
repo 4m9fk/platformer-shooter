@@ -23,7 +23,7 @@ export class BootScene extends Phaser.Scene {
     makeTextures(this);
     createAnims(this, 'hero');
     createAnims(this, 'zombie');
-    this.scene.start('Game');
+    this.scene.start('Game', { level: 0 });
     this.scene.launch('UI');
   }
 }

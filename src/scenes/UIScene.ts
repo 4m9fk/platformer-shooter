@@ -122,7 +122,7 @@ export class UIScene extends Phaser.Scene {
     button.on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
       this.registry.set('won', false);
       this.intent.clearPointers();
-      this.scene.get('Game').scene.restart();
+      this.scene.get('Game').scene.restart({ level: this.registry.get('levelIndex') });
     });
     return this.add.container(0, 0, [this.winShade, this.winText, button, label]).setDepth(10).setVisible(false);
   }

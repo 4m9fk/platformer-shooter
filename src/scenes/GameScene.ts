@@ -6,11 +6,14 @@ import { Hero } from '../entities/Hero';
 import { Zombie } from '../entities/Zombie';
 import type { Intent } from '../input/Intent';
 import { Grid } from '../levels/grid';
-import { LEVEL1 } from '../levels/level1';
+import { LEVELS, type LevelDef } from '../levels/levels';
 import { Cell, Level, parseLevel } from '../levels/parse';
+import { makeBackdrop } from '../textures/placeholders';
 
 export class GameScene extends Phaser.Scene {
   private level!: Level;
+  private def!: LevelDef;
+  private levelIndex = 0;
   private grid!: Grid;
   private hero!: Hero;
   private solids!: Phaser.Physics.Arcade.StaticGroup;
@@ -29,15 +32,17 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** The scene object survives restart(): reset every field that create() does not overwrite. */
-  init() {
+  init(data: { level?: number }) {
+    this.levelIndex = Phaser.Math.Clamp(data.level ?? 0, 0, LEVELS.length - 1);
     this.layers = [];
     this.respawning = false;
   }
 
   create() {
-    this.level = parseLevel(LEVEL1);
+    this.def = LEVELS[this.levelIndex];
+    this.level = parseLevel(this.def.map);
     this.grid = new Grid(this.level);
-    this.registry.set({ kills: 0, won: false, zombiesTotal: this.level.zombies.length });
+    this.registry.set({ levelIndex: this.levelIndex, kills: 0, won: false, zombiesTotal: this.level.zombies.length });
     const worldW = this.level.width * TILE;
     const worldH = this.level.height * TILE;
     this.physics.world.setBounds(0, 0, worldW, worldH);
@@ -107,11 +112,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   private addBackground() {
-    this.sky = this.add.image(0, 0, 'sky').setOrigin(0).setScrollFactor(0);
+    makeBackdrop(this, this.def.theme);
+    const key = this.def.theme.key;
+    this.sky = this.add.image(0, 0, `sky-${key}`).setOrigin(0).setScrollFactor(0);
     this.layers = [
       this.add.tileSprite(0, 0, GAME_W, 260, 'clouds'),
-      this.add.tileSprite(0, 0, GAME_W, 260, 'hills-far'),
-      this.add.tileSprite(0, 0, GAME_W, 200, 'hills-near'),
+      this.add.tileSprite(0, 0, GAME_W, 260, `hills-far-${key}`),
+      this.add.tileSprite(0, 0, GAME_W, 200, `hills-near-${key}`),
     ].map((layer) => layer.setOrigin(0).setScrollFactor(0));
     this.fitBackground();
     // Scale.EXPAND: the game width follows the screen, so the backdrop must cover it on every resize
