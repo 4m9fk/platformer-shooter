@@ -5,6 +5,10 @@ import { parseLevel } from './parse';
 // width and zombie count per level, in order; a new level adds a line here
 const EXPECTED = [
   { id: 'level-1', width: 70, zombies: 5 },
+  { id: 'level-2', width: 80, zombies: 6 },
+  { id: 'level-3', width: 90, zombies: 7 },
+  { id: 'level-4', width: 100, zombies: 8 },
+  { id: 'level-5', width: 110, zombies: 10 },
 ];
 
 describe('LEVELS', () => {

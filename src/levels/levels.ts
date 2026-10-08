@@ -1,5 +1,9 @@
 import { SKY_BOTTOM, SKY_TOP } from '../config';
 import { LEVEL1 } from './maps/level1';
+import { LEVEL2 } from './maps/level2';
+import { LEVEL3 } from './maps/level3';
+import { LEVEL4 } from './maps/level4';
+import { LEVEL5 } from './maps/level5';
 
 /** Backdrop colours. key names the textures makeBackdrop draws for this theme. */
 export interface Theme {
@@ -23,4 +27,8 @@ export const DUSK: Theme = { key: 'dusk', skyTop: 0x2e3a6b, skyBottom: 0x8a7bb8,
 
 export const LEVELS: LevelDef[] = [
   { id: 'level-1', map: LEVEL1, theme: DAY },
+  { id: 'level-2', map: LEVEL2, theme: DAY },
+  { id: 'level-3', map: LEVEL3, theme: SUNSET },
+  { id: 'level-4', map: LEVEL4, theme: SUNSET },
+  { id: 'level-5', map: LEVEL5, theme: DUSK },
 ];
