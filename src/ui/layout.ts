@@ -1,4 +1,4 @@
-import { BUTTON_MARGIN, BUTTON_SIZE, MENU_GAP, MENU_TILE } from '../config';
+import { BUTTON_MARGIN, BUTTON_SIZE, MENU_GAP, MENU_TILE, PAUSE_GAP } from '../config';
 import type { Action } from '../input/Intent';
 
 export interface Point {
@@ -17,6 +17,8 @@ export interface Insets {
 export interface HudLayout {
   buttons: Record<Action, Point>;
   counter: Point; // top-left corner of the zombie counter
+  lives: Point; // centre of the first heart, the rest follow to the right
+  pause: Point; // top-right corner of the ⏸ icon
   fullscreen: Point; // top-right corner of the ⛶ label
   center: Point;
 }
@@ -41,7 +43,9 @@ export function hudLayout(width: number, height: number, insets: Insets = NO_INS
       jump: { x: right - m - r, y: low - BUTTON_SIZE - m },
     },
     counter: { x: left + m, y: insets.top + 16 },
-    fullscreen: { x: right - m, y: insets.top + 12 },
+    lives: { x: left + m + 20, y: insets.top + 80 },
+    pause: { x: right - m, y: insets.top + 12 },
+    fullscreen: { x: right - m - PAUSE_GAP, y: insets.top + 12 },
     center: { x: width / 2, y: height / 2 },
   };
 }

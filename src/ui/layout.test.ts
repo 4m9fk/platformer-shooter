@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BUTTON_MARGIN as M, BUTTON_SIZE, MENU_GAP, MENU_TILE } from '../config';
+import { BUTTON_MARGIN as M, BUTTON_SIZE, MENU_GAP, MENU_TILE, PAUSE_GAP } from '../config';
 import { hudLayout, menuLayout } from './layout';
 
 const R = BUTTON_SIZE / 2;
@@ -18,7 +18,8 @@ describe('hudLayout', () => {
     expect(l.buttons.shoot.x).toBe(1170 - M - R);
     expect(l.buttons.jump.x).toBe(1170 - M - R);
     expect(l.buttons.left.x).toBe(M + R);
-    expect(l.fullscreen).toEqual({ x: 1170 - M, y: 12 });
+    expect(l.pause).toEqual({ x: 1170 - M, y: 12 });
+    expect(l.fullscreen).toEqual({ x: 1170 - M - PAUSE_GAP, y: 12 });
     expect(l.center).toEqual({ x: 585, y: 270 });
   });
 
@@ -40,10 +41,12 @@ describe('hudLayout with safe-area insets', () => {
     expect(l.buttons.jump.y).toBe(540 - 20 - M - R - BUTTON_SIZE - M);
   });
 
-  it('keeps the counter and ⛶ below the top inset and inside the sides', () => {
+  it('keeps the counter, hearts, ⏸ and ⛶ below the top inset and inside the sides', () => {
     const l = hudLayout(1170, 540, insets);
     expect(l.counter).toEqual({ x: 44 + M, y: 10 + 16 });
-    expect(l.fullscreen).toEqual({ x: 1170 - 44 - M, y: 10 + 12 });
+    expect(l.lives).toEqual({ x: 44 + M + 20, y: 10 + 80 });
+    expect(l.pause).toEqual({ x: 1170 - 44 - M, y: 10 + 12 });
+    expect(l.fullscreen).toEqual({ x: 1170 - 44 - M - PAUSE_GAP, y: 10 + 12 });
   });
 
   it('centres overlays on the whole screen, not the safe area', () => {

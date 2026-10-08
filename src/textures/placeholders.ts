@@ -18,6 +18,8 @@ export function makeTextures(scene: Phaser.Scene) {
   makeLock(scene);
   makeTile(scene, 'tile-open', 0x58b947);
   makeTile(scene, 'tile-locked', 0x7a8794);
+  makeHeart(scene);
+  makePause(scene);
 }
 
 /** Sky and both hill layers in the theme's colours, keys suffixed with theme.key. Drawn on first use, then reused. */
@@ -154,5 +156,20 @@ function makeTile(scene: Phaser.Scene, key: string, color: number) {
   draw(scene, key, MENU_TILE, MENU_TILE, (g) => {
     g.fillStyle(color).fillRoundedRect(3, 3, MENU_TILE - 6, MENU_TILE - 6, 20);
     g.lineStyle(5, 0xffffff).strokeRoundedRect(3, 3, MENU_TILE - 6, MENU_TILE - 6, 20);
+  });
+}
+
+function makeHeart(scene: Phaser.Scene) {
+  draw(scene, 'heart', 40, 36, (g) => {
+    g.fillStyle(0xe94b3c);
+    g.fillCircle(11, 12, 10).fillCircle(29, 12, 10);
+    g.fillTriangle(2, 16, 38, 16, 20, 35);
+  });
+}
+
+function makePause(scene: Phaser.Scene) {
+  draw(scene, 'pause', 44, 44, (g) => {
+    g.fillStyle(0x1d2b3a).fillRoundedRect(6, 4, 13, 36, 3).fillRoundedRect(25, 4, 13, 36, 3);
+    g.fillStyle(0xffffff).fillRoundedRect(9, 7, 7, 30, 2).fillRoundedRect(28, 7, 7, 30, 2);
   });
 }

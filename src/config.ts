@@ -39,3 +39,4 @@ export const STAR_DELAY = 300; // pause between stars popping up on the win scre
 
 export const MENU_TILE = 140; // level tile side in the menu, shrinks on narrow screens
 export const MENU_GAP = 24;
+export const PAUSE_GAP = 70; // ⏸ sits at the right edge, ⛶ this far to its left
